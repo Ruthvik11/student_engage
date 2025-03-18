@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import pandas as pd
 import random
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://ruthvik:<db_password>@cluster0.vay81.mongodb.net/")
 db = client["student_engagement"]
 
 raw_data_collection = db["raw_data"]
