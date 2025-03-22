@@ -17,17 +17,17 @@ else:
     print(" Raw data already exists, skipping insertion.")
 
 def insert_raw_data(input_data):
-    existing_ids = {user["UserId"] for user in get_raw_data() if "UserId" in user}
+    existing_ids = {user["UserID"] for user in get_raw_data() if "UserID" in user}
 
     for doc in input_data:
         doc.pop('_id', None)  # Remove `_id` if present (prevents duplicate key errors)
 
         # ✅ Ensure `UserId` is assigned if missing
-        if "UserId" not in doc or pd.isna(doc["UserId"]):
+        if "UserID" not in doc or pd.isna(doc["UserID"]):
             while True:
                 new_id = random.randint(1000, 9999)  # Generate unique 4-digit UserId
                 if new_id not in existing_ids:
-                    doc["UserId"] = new_id
+                    doc["UserID"] = new_id
                     existing_ids.add(new_id)  # Update existing IDs set
                     break  
 

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Engagement Prediction</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background-color: #2ecc71;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+        }
+        .submit-btn:hover {
+            background-color: #27ae60;
+        }
+        .result {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        .loading::after {
+            content: "...";
+            animation: dots 1.5s infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        .engagement-high {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .engagement-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .engagement-low {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Course Engagement Prediction System</h1>
+        
+        <div class="actions">
+            <button id="runEtlBtn">Run ETL Process</button>
+            <button id="trainModelBtn">Train Model</button>
+        </div>
+        
+        <div id="etlStatus" class="status"></div>
+        <div id="trainingStatus" class="status"></div>
+        
+        <h2>Predict Course Completion</h2>
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="courseCategory">Course Category:</label>
+                <select id="courseCategory" required>
+                    <option value="Programming">Programming</option>
+                    <option value="Health">Health</option>
+                    <option value="Science">science</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Business">Business</option>
+                    
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeSpent">Time Spent on Course (hours):</label>
+                <input type="number" id="timeSpent" min="0" max="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="videosWatched">Number of Videos Watched:</label>
+                <input type="number" id="videosWatched" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="quizzesTaken">Number of Quizzes Taken:</label>
+                <input type="number" id="quizzesTaken" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="quizScores">Quiz Scores (0-100):</label>
+                <input type="number" id="quizScores" min="0" max="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="completionRate">Current Completion Rate (%):</label>
+                <input type="number" id="completionRate" min="0" max="100" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="deviceType">Device Type:</label>
+                <select id="deviceType" required>
+                    <option value=1>Desktop</option>
+                    <option value=0>Mobile</option>
+                    
+                </select>
+            </div>
+            
+            <button type="submit" class="submit-btn">Predict Course Completion</button>
+        </form>
+        
+        <div id="loading" class="loading">Processing</div>
+        
+        <div id="result" class="result">
+            <h3>Prediction Results</h3>
+            <table>
+                <tr>
+                    <th>User ID</th>
+                    <td id="resultUserId"></td>
+                </tr>
+                <tr>
+                    <th>Predicted Course Completion</th>
+                    <td id="resultPrediction"></td>
+                </tr>
+                <tr>
+                    <th>Engagement Level</th>
+                    <td id="resultEngagementLevel"></td>
+                </tr>
+                <tr>
+                    <th>Engagement Score</th>
+                    <td id="resultEngagementScore"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // API endpoint (update this to match your FastAPI server)
+        const API_URL = 'https://student-engage.onrender.com';
+        
+        // DOM elements - Adding null checks to prevent errors
+        const runEtlBtn = document.getElementById('runEtlBtn');
+        const trainModelBtn = document.getElementById('trainModelBtn');
+        const predictionForm = document.getElementById('predictionForm');
+        const etlStatus = document.getElementById('etlStatus');
+        const trainingStatus = document.getElementById('trainingStatus');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        
+        // Check if all elements exist before setting up event listeners
+        if (runEtlBtn && etlStatus && loading) {
+            // Run ETL Process
+            runEtlBtn.addEventListener('click', async () => {
+                try {
+                    etlStatus.textContent = '';
+                    etlStatus.className = 'status';
+                    loading.style.display = 'block';
+                    
+                    const response = await fetch(`${API_URL}/run_etl`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    loading.style.display = 'none';
+                    
+                    if (response.ok) {
+                        etlStatus.textContent = 'ETL process completed successfully!';
+                        etlStatus.classList.add('status', 'success');
+                    } else {
+                        const error = await response.json();
+                        etlStatus.textContent = `Error: ${error.detail || 'Something went wrong'}`;
+                        etlStatus.classList.add('status', 'error');
+                    }
+                } catch (error) {
+                    loading.style.display = 'none';
+                    etlStatus.textContent = `Error: ${error.message || 'Network error'}`;
+                    etlStatus.classList.add('status', 'error');
+                }
+                
+                etlStatus.style.display = 'block';
+            });
+        }
+        
+        if (trainModelBtn && trainingStatus && loading) {
+            // Train Model
+            trainModelBtn.addEventListener('click', async () => {
+                try {
+                    trainingStatus.textContent = '';
+                    trainingStatus.className = 'status';
+                    loading.style.display = 'block';
+                    
+                    const response = await fetch(`${API_URL}/train_model`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    loading.style.display = 'none';
+                    
+                    if (response.ok) {
+                        trainingStatus.textContent = 'Model trained successfully!';
+                        trainingStatus.classList.add('status', 'success');
+                    } else {
+                        const error = await response.json();
+                        trainingStatus.textContent = `Error: ${error.detail || 'Something went wrong'}`;
+                        trainingStatus.classList.add('status', 'error');
+                    }
+                } catch (error) {
+                    loading.style.display = 'none';
+                    trainingStatus.textContent = `Error: ${error.message || 'Network error'}`;
+                    trainingStatus.classList.add('status', 'error');
+                }
+                
+                trainingStatus.style.display = 'block';
+            });
+        }
+        
+        if (predictionForm && loading && result) {
+            // Predict Course Completion
+            predictionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                try {
+                    loading.style.display = 'block';
+                    result.style.display = 'none';
+                    
+                    // Build request data from form
+                    const requestData = {
+                        UserID: null,
+                        CourseCategory: document.getElementById('courseCategory')?.value || '',
+                        TimeSpentOnCourse: parseInt(document.getElementById('timeSpent')?.value || '0'),
+                        NumberOfVideosWatched: parseInt(document.getElementById('videosWatched')?.value || '0'),
+                        NumberOfQuizzesTaken: parseInt(document.getElementById('quizzesTaken')?.value || '0'),
+                        QuizScores: parseInt(document.getElementById('quizScores')?.value || '0'),
+                        CompletionRate: parseInt(document.getElementById('completionRate')?.value || '0'),
+                        DeviceType: document.getElementById('deviceType')?.value || 'Desktop',
+                        CourseCompletion: null
+                    };
+                    
+                    const response = await fetch(`${API_URL}/predict_model`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    loading.style.display = 'none';
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('API Response:', data); // For debugging
+                        
+                        // Get result elements - Adding null checks
+                        const resultUserId = document.getElementById('resultUserId');
+                        const resultPrediction = document.getElementById('resultPrediction');
+                        const resultEngagementLevel = document.getElementById('resultEngagementLevel');
+                        const resultEngagementScore = document.getElementById('resultEngagementScore');
+                        
+                        // Display UserID - directly from API response
+                        if (resultUserId) {
+                            resultUserId.textContent = data.UserID !== undefined ? data.UserID : 'N/A';
+                        }
+                        
+                        // Predicted completion with label
+                        if (resultPrediction) {
+                            // The API might return 1 as a number or string, so we need to check both
+                            const completionValue = data.PredictedCourseCompletion;
+                            const completionText = completionValue === 1 || completionValue === "1" ? 
+                                'Likely to complete (1)' : 'Unlikely to complete (0)';
+                            resultPrediction.textContent = completionText;
+                        }
+                        
+                        // Engagement level with color coding
+                        if (resultEngagementLevel) {
+                            const level = data.EngagementLevel || 'N/A';
+                            resultEngagementLevel.textContent = level;
+                            resultEngagementLevel.className = '';
+                            if (level && level !== 'N/A') {
+                                resultEngagementLevel.classList.add(`engagement-${level.toLowerCase()}`);
+                            }
+                        }
+                        
+                        // Engagement score - may be missing from API response
+                        if (resultEngagementScore) {
+                            // Fallback to calculating a score if it's not provided
+                            const score = data.EngagementScore !== undefined ? 
+                                data.EngagementScore : 
+                                // If score is missing, we can calculate a simple score
+                                (data.EngagementLevel === 'High' ? 90 : 
+                                 data.EngagementLevel === 'Medium' ? 70 : 
+                                 data.EngagementLevel === 'Low' ? 40 : 'N/A');
+                            resultEngagementScore.textContent = score;
+                        }
+                        
+                        // Show results
+                        result.style.display = 'block';
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.detail || error.error || 'Something went wrong'}`);
+                    }
+                } catch (error) {
+                    loading.style.display = 'none';
+                    alert(`Error: ${error.message || 'Network error'}`);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

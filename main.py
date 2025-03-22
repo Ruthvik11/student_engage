@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from etl import run_etl
 from model import train_model, predict_coursecompletion
@@ -11,7 +11,7 @@ app.add_middleware(
     allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],  
-    allow_headers=["*"], 
+    allow_headers=["*"],  
 )
 
 @app.post("/upload-data")
@@ -31,3 +31,12 @@ async def training_model():
 @app.post('/predict_model')
 async def predicting_model(input_data: dict):
     return predict_coursecompletion(input_data)
+
+@app.get("/user_id")
+async def check_user(user_id: int):
+    users = get_raw_data()
+    for user in users:
+        if user.get("UserID") == user_id:
+            return user
+    
+    raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")

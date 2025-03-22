@@ -42,6 +42,11 @@ def encode_engagement_level(raw_dataframe):
 
 # 4. One-Hot Encode Course Category
 def one_hot_encode_course(raw_dataframe):
+    raw_dataframe['CourseCategory'] = raw_dataframe['CourseCategory'].str.strip().str.title()
+
+
+    valid_courses = ['Health', 'Arts', 'Science', 'Programming', 'Business']
+    raw_dataframe = raw_dataframe[raw_dataframe['CourseCategory'].isin(valid_courses)]
     raw_dataframe = pd.get_dummies(raw_dataframe, columns=["CourseCategory"], drop_first=False)
 
     # Convert boolean columns (True/False) to integers (0/1)

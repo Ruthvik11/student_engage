@@ -125,8 +125,8 @@ def predict_coursecompletion(input_data):
         prediction = rc_model.predict(input_dataframe)
 
         
-        input_data["PredictedCourseCompletion"] = int(prediction[0])
-        input_data["EngagementLevel"] = engagement_level_text
+        input_data["CourseCompletion"] = int(prediction[0])
+        
         insert_raw_data([input_data])
 
         return {
