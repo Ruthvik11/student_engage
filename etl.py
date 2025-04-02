@@ -5,10 +5,10 @@ from database import get_raw_data, insert_processed_data
 
 # 1. Calculate Engagement Score
 def calculate_engagement_score(raw_dataframe):
-    w_time = 0.3  
-    w_videos = 0.2  
-    w_quizzes = 0.2  
-    w_quiz_scores = 0.2  
+    w_time =  0.18  
+    w_videos = 0.23  
+    w_quizzes = 0.28  
+    w_quiz_scores = 0.30   
 
     raw_dataframe["EngagementScore"] = (
         (w_time * raw_dataframe["TimeSpentOnCourse"]) +

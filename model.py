@@ -37,30 +37,23 @@ def train_model():
     rc_model.fit(x_train,y_train)
 
     print("model trained successfully")
-def create_id():
-    existing_ids = {user.get("UserID", None) for user in get_raw_data() if "UserID" in user}
 
-    while True:
-        new_id = random.randint(1000, 9999)  
-        if new_id not in existing_ids:
-            return new_id
 
 def predict_coursecompletion(input_data):
     global rc_model  
 
     
-    if "UserID" not in input_data or pd.isna(input_data["UserID"]):
-        input_data["UserID"] = create_id()
     
-    user_id = input_data["UserID"]  
+     
     input_dataframe = pd.DataFrame([input_data])
     
     print(input_dataframe)
     
-    w_time = 0.3  
-    w_videos = 0.2  
-    w_quizzes = 0.2  
-    w_quiz_scores = 0.2  
+    w_time =  0.18  
+    w_videos = 0.23  
+    w_quizzes = 0.28  
+    w_quiz_scores = 0.30
+  
 
     input_dataframe["EngagementScore"] = (
         (w_time * input_dataframe["TimeSpentOnCourse"]) +
@@ -127,11 +120,11 @@ def predict_coursecompletion(input_data):
         
         input_data["CourseCompletion"] = int(prediction[0])
         
-        insert_raw_data([input_data])
+        
 
         return {
-            "UserID": user_id,
             "PredictedCourseCompletion": int(prediction[0]),
+            "EngagementScore": float(input_dataframe["EngagementScore"].iloc[0]),
             "EngagementLevel": engagement_level_text
         }
 
