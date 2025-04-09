@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from etl import run_etl
-from model import train_model, predict_coursecompletion
-from database import insert_raw_data, get_raw_data
+from .etl import run_etl
+from .model import train_model, predict_coursecompletion
+from .database import insert_raw_data, get_raw_data
 
 
 app = FastAPI()

@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from sklearn.preprocessing import LabelEncoder
-from database import get_processed_data, get_raw_data, insert_raw_data
+from .database import get_processed_data, get_raw_data, insert_raw_data
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 

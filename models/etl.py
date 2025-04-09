@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
-from database import get_raw_data, insert_processed_data
+from .database import get_raw_data, insert_processed_data
 
 # 1. Calculate Engagement Score
 def calculate_engagement_score(raw_dataframe):
