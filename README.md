@@ -11,7 +11,7 @@ A FastAPI-based machine learning project to **analyze and predict student engage
 - Store raw and processed data in MongoDB
 - Train ML models dynamically using processed data
 - Predict engagement levels: **Low**, **Medium**, **High**
-- Automatically store prediction inputs for future training
+
 
 ## 🧠 Engagement Classification
 
@@ -51,7 +51,7 @@ Based on student activity, the project classifies engagement into:
 
 - Fetches processed data from MongoDB
 - Trains a RandomForestClassifier
-- Saves model for future predictions
+
 
 ## 🔮 Prediction Example
 
